@@ -100,6 +100,29 @@ public class Utils {
         return result;
     }
 
+    public static <T, R extends Type<T>, E extends Type<T>> List<E> typeMap(
+            List<List<T>> input,
+            Class<E> outerDestType,
+            Class<R> innerType) {
+        List<E> result = new ArrayList<E>();
+        try {
+            Constructor<E> constructor = outerDestType.getDeclaredConstructor(List.class);
+            for (List<T> ts : input) {
+                E e = constructor.newInstance(typeMap(ts, innerType));
+                result.add(e);
+            }
+        } catch (InstantiationException e) {
+            throw new TypeMappingException(e);
+        }  catch (NoSuchMethodException e) {
+            throw new TypeMappingException(e);
+        } catch (IllegalAccessException e) {
+            throw new TypeMappingException(e);
+        } catch (InvocationTargetException e) {
+            throw new TypeMappingException(e);
+        }
+        return result;
+    }
+
     public static <T, R extends Type<T>> List<R> typeMap(List<T> input, Class<R> destType)
             throws TypeMappingException {
 
@@ -122,7 +145,6 @@ public class Utils {
                 throw new TypeMappingException(e);
             }
         }
-
         return result;
     }
 }
